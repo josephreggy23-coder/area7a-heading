@@ -1,0 +1,35 @@
+# --- Data: unpublished macaque recordings from the Angelaki/Avila dataset. Not ours to redistribute.
+data/
+*.mat
+*.nev
+*.ns*
+*.plx
+*.pl2
+
+# --- Source literature: copyrighted papers + JP's unpublished figures. Referenced by DOI in notes/.
+*.pdf
+*.docx
+work/
+
+# --- Regenerable output
+figures/
+*.png
+!notes/img/*.png
+
+# --- Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# --- OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
