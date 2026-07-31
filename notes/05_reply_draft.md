@@ -5,8 +5,14 @@ Joseph already replied 2026-07-30: *"Thanks so much for the opportunity. I will 
 right away."* — so this is a progress update, not a first reply.
 
 **Dropbox status:** the invite to the folder **"VisVest Eric"** was received (twice, 2026-07-29,
-from jeanpaulnc@gmail.com) and the account is active. The data simply has not been downloaded to
-the analysis machine yet. Do **not** ask JP to re-send.
+from jeanpaulnc@gmail.com) and the account is active. Do **not** ask JP to re-send it. The actual
+obstacle is that the folder exceeds the 2 GB Dropbox Basic quota, so "Add to Dropbox" fails —
+files have to be downloaded individually from the web view instead. The draft mentions this as a
+logistical aside rather than a blocker, and asks for the HD file directly as a convenience.
+
+**Superseded:** the cue-conflict question has been dropped from the email. Gu 2008 estimated
+neuronal weights from tuning curves by least squares with no conflict manipulation, so its absence
+is no longer a hard blocker — see `03_analysis_plan.md`.
 
 *Draft below — a Gmail draft has been created but nothing has been sent.*
 
