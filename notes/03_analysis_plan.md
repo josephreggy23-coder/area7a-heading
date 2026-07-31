@@ -81,6 +81,31 @@ that rescues the story given low single-neuron sensitivity)
 
 ---
 
+## Method details verified against the source papers
+
+Pulled from the PMC full text of Gu 2007 (PMC2430983) and Gu 2008 (PMC2713666), so our
+implementations match the published procedures rather than a plausible reconstruction:
+
+| Detail | Published value | Status |
+|---|---|---|
+| Psychophysical threshold | σ of the cumulative Gaussian ("corresponds to 84% correct") | matches |
+| Neuronal threshold | σ of a cumulative Gaussian fit to the ROC neurometric function, *fit identically to the psychometric* | matches |
+| Neurometric construction | ROC comparing the neuron against a presumed antineuron with opposite tuning, per heading pair (e.g. −9° vs +9°) | matches |
+| Grand CP | z-score within each heading, pool across headings, then a single ROC | matches |
+| CP inclusion criterion | "at least 3 choices in favor of each direction" per heading | matches (`min_per_group=3`) |
+| CP significance | permutation test, 1000 permutations | matches (we default to 2000) |
+| **Spike-count window** | **"mean firing rates during the middle 1 s interval of each stimulus presentation"** | **added — `spikes.middle_window()`** |
+| **Congruency index** | **CI = R_ves × R_vis, the product of the two rate-vs-heading Pearson correlations** | **corrected** — we had been using the correlation *between tuning curves*, which agrees in sign but not magnitude |
+| Threshold comparison | paired t-test | to apply |
+| σ prediction | √(σ_ves²σ_vis²/(σ_ves²+σ_vis²)) | matches |
+| **Neuronal weights** | **R_com = w_ves·R_ves + w_vis·R_vis, weights minimising SSE** | **added — `integration.neuronal_weights()`** |
+
+**Consequence worth noting:** Gu 2008 estimated *neuronal* cue weights from the tuning curves
+alone, by least squares, with no cue-conflict manipulation in the primary task. So the absence of
+conflict trials in this dataset would block the *behavioural* weight analysis but **not** the
+neuronal one — which is the half that speaks to how 7a itself combines cues. That materially
+lowers the risk of the whole project.
+
 ## Analysis primitives to implement
 
 | Primitive | Definition | Module |

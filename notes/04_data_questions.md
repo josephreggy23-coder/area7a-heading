@@ -18,10 +18,16 @@ question gets settled in one look rather than by argument.
 
 ## Questions that change which analyses are possible
 
-### 1. Are there cue-conflict (Δ) trials?  **Blocks: behavioural cue weights (Gu 2008)**
-Gu 2008 used Δ = ±4°: visual displaced +Δ/2, vestibular −Δ/2. Without conflict trials we can
-still test the *threshold* prediction (√ combination) but cannot measure the *weight* the animal
-placed on each cue, which is half of that paper's argument.
+### 1. Are there cue-conflict (Δ) trials?  **Blocks: *behavioural* cue weights only**
+Δ = ±4°: visual displaced +Δ/2, vestibular −Δ/2. Without conflict trials we cannot measure the
+weight the *animal* placed on each cue from PSE shifts.
+
+**Downgraded from a hard blocker.** Checking Gu 2008's methods directly: their primary task used
+congruent bimodal stimuli, and *neuronal* weights were estimated from the tuning curves by least
+squares (`R_com = w_ves·R_ves + w_vis·R_vis`), needing no conflict manipulation at all. So the
+half of the analysis that speaks to how 7a itself combines cues survives regardless. We would
+lose only the behavioural weight comparison. Still worth asking, but it no longer threatens the
+project.
 Look for a field named `delta`, `conflict`, or a second heading vector per trial.
 
 ### 2. Is visual coherence varied?  **Blocks: the entire Fetsch 2011 replication**

@@ -293,36 +293,47 @@ def congruency(
     improves sensitivity for congruent cells and *degrades* it for opposite cells, so this
     classification is a prerequisite for the Fig 3 comparison.
 
-    Returns the two slopes with their p-values, a continuous congruency index (the Pearson
-    correlation of the two tuning curves over shared headings), and a categorical label.
-    Units whose slope is not significant in both conditions are labelled ``"untuned"``,
-    since the sign of a non-significant slope carries no information.
+    Congruency index, following the published definition:
+
+        CI = R_ves * R_vis
+
+    where each R is the Pearson correlation coefficient of a linear fit of firing rate against
+    heading within that modality. CI runs from -1 to +1; positive means aligned tuning slopes.
+    Note this is the product of the two rate-vs-heading correlations, *not* the correlation
+    between the two tuning curves -- the two agree in sign but not in magnitude.
+
+    A unit is labelled only when both underlying correlations are individually significant,
+    since the sign of a non-significant slope carries no information. Gu 2008 tests whether CI
+    itself differs from zero; requiring both components to be significant is a slightly
+    stricter and more transparent reading of the same idea.
     """
     s_ves, p_ves = tuning_slope(headings_ves, rates_ves)
     s_vis, p_vis = tuning_slope(headings_vis, rates_vis)
 
-    hv = np.asarray(headings_ves, float)
-    rv = np.asarray(rates_ves, float)
-    hs = np.asarray(headings_vis, float)
-    rs = np.asarray(rates_vis, float)
-    shared = np.intersect1d(np.unique(hv), np.unique(hs))
-    if shared.size >= 3:
-        tc_ves = np.array([np.mean(rv[np.isclose(hv, h)]) for h in shared])
-        tc_vis = np.array([np.mean(rs[np.isclose(hs, h)]) for h in shared])
-        ci = float(stats.pearsonr(tc_ves, tc_vis).statistic)
-    else:
-        ci = np.nan
+    def _r(h: Sequence[float], r: Sequence[float]) -> float:
+        x = np.asarray(h, float)
+        y = np.asarray(r, float)
+        ok = np.isfinite(x) & np.isfinite(y)
+        if ok.sum() < 3 or np.ptp(x[ok]) == 0 or np.std(y[ok]) == 0:
+            return np.nan
+        return float(stats.pearsonr(x[ok], y[ok]).statistic)
 
-    if not (np.isfinite(s_ves) and np.isfinite(s_vis)) or p_ves > alpha or p_vis > alpha:
+    r_ves = _r(headings_ves, rates_ves)
+    r_vis = _r(headings_vis, rates_vis)
+    ci = float(r_ves * r_vis) if np.isfinite(r_ves) and np.isfinite(r_vis) else np.nan
+
+    if not np.isfinite(ci) or p_ves > alpha or p_vis > alpha:
         label = "untuned"
     else:
-        label = "congruent" if s_ves * s_vis > 0 else "opposite"
+        label = "congruent" if ci > 0 else "opposite"
 
     return {
         "slope_ves": s_ves,
         "p_ves": p_ves,
         "slope_vis": s_vis,
         "p_vis": p_vis,
+        "r_ves": r_ves,
+        "r_vis": r_vis,
         "congruency_index": ci,
         "label": label,
     }

@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 import numpy as np
-from scipy import stats
+from scipy import optimize, stats
 
 from .behavior import fit_psychometric
 
@@ -117,6 +117,72 @@ def measured_visual_weight(
         return np.nan, np.nan
     res = stats.linregress(d[ok], p[ok])
     return float(0.5 - res.slope), float(res.pvalue)
+
+
+def neuronal_weights(
+    tuning_ves: Sequence[float],
+    tuning_vis: Sequence[float],
+    tuning_com: Sequence[float],
+    force_nonnegative: bool = False,
+) -> dict[str, float]:
+    """Estimate how a neuron weights the two cues, from tuning curves alone.
+
+    Gu 2008 fits the combined-condition tuning curve as a linear weighted sum of the two
+    single-cue tuning curves,
+
+        R_com = w_ves * R_ves + w_vis * R_vis
+
+    with the weights chosen to minimise the sum-squared error against the measured combined
+    response. Weights below 1/2 each indicate the sub-additive combination they report.
+
+    **This does not need cue-conflict trials.** That matters here: even if the dataset turns
+    out to have no conflict manipulation -- which would block the *behavioural* weight
+    analysis -- the neuronal weight analysis, which is the part that speaks to how 7a itself
+    combines cues, remains available.
+
+    Parameters
+    ----------
+    tuning_ves, tuning_vis, tuning_com
+        Mean firing rate per heading, in matching heading order, one entry per heading.
+    force_nonnegative
+        Constrain both weights to be >= 0. Off by default, since a genuinely negative weight
+        is informative (it says the combined response is not a mixture of the two single-cue
+        responses at all) and silently clipping it would hide that.
+
+    Returns
+    -------
+    dict
+        ``w_ves``, ``w_vis``, their normalised versions summing to 1, and the ``r_squared`` of
+        the fit. A poor ``r_squared`` means the weighted-sum model does not describe this
+        neuron and its weights should not be interpreted.
+    """
+    a = np.asarray(tuning_ves, float)
+    b = np.asarray(tuning_vis, float)
+    y = np.asarray(tuning_com, float)
+    ok = np.isfinite(a) & np.isfinite(b) & np.isfinite(y)
+    if ok.sum() < 3:
+        return {"w_ves": np.nan, "w_vis": np.nan, "w_ves_norm": np.nan,
+                "w_vis_norm": np.nan, "r_squared": np.nan}
+
+    design = np.column_stack([a[ok], b[ok]])
+    if force_nonnegative:
+        w, _ = optimize.nnls(design, y[ok])
+    else:
+        w, *_ = np.linalg.lstsq(design, y[ok], rcond=None)
+
+    pred = design @ w
+    ss_res = float(np.sum((y[ok] - pred) ** 2))
+    ss_tot = float(np.sum((y[ok] - np.mean(y[ok])) ** 2))
+    r2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else np.nan
+
+    total = float(w[0] + w[1])
+    return {
+        "w_ves": float(w[0]),
+        "w_vis": float(w[1]),
+        "w_ves_norm": float(w[0] / total) if total != 0 else np.nan,
+        "w_vis_norm": float(w[1] / total) if total != 0 else np.nan,
+        "r_squared": r2,
+    }
 
 
 def pse_by_conflict(
