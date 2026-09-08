@@ -2,6 +2,7 @@
 
 from . import (
     behavior,
+    cross_temporal,
     integration,
     matio,
     neurometrics,
@@ -13,6 +14,7 @@ from . import (
 
 __all__ = [
     "behavior",
+    "cross_temporal",
     "integration",
     "matio",
     "neurometrics",
