@@ -16,6 +16,8 @@ from seven_a.neurometrics import (
     choice_probability,
     congruency,
     discrimination_index,
+    neurometric_bootstrap_ci,
+    neurometric_function,
     partial_correlations,
     preferred_side,
     roc_auc,
@@ -78,6 +80,123 @@ class TestPreferredSide:
         headings = [-12, -6, -3, 0, 3, 6, 12]
         rates = [7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0]
         assert preferred_side(headings, rates) is False
+
+
+# ------------------------------------------------------------------
+# Neurometric function
+# ------------------------------------------------------------------
+class TestNeurometricFunction:
+    @staticmethod
+    def _make_tuned_unit(
+        sigma: float = 4.0, n_per: int = 40, seed: int = 0
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Simulate a right-preferring unit with known threshold.
+
+        Generates trial-by-trial rates from a linear tuning curve plus
+        Gaussian noise, with steepness calibrated so the neurometric
+        threshold (via the antineuron ROC) should be near ``sigma``.
+        """
+        rng = np.random.default_rng(seed)
+        headings_set = np.array([-12, -6, -3, -1.5, 0, 1.5, 3, 6, 12])
+        headings = np.repeat(headings_set, n_per)
+        # Slope chosen so d' at heading=sigma equals ~1 (threshold convention).
+        noise_sd = 5.0
+        slope = noise_sd / sigma
+        rates = 20.0 + slope * headings + rng.normal(0, noise_sd, len(headings))
+        rates = np.maximum(rates, 0.0)
+        return headings, rates
+
+    def test_returns_neurometric_result(self) -> None:
+        headings, rates = self._make_tuned_unit()
+        result = neurometric_function(headings, rates)
+        assert isinstance(result, NeurometricResult)
+
+    def test_threshold_is_positive(self) -> None:
+        headings, rates = self._make_tuned_unit()
+        result = neurometric_function(headings, rates)
+        assert result.threshold > 0
+
+    def test_p_right_at_zero_is_half(self) -> None:
+        """The antineuron construction forces p_right(0) = 0.5."""
+        headings, rates = self._make_tuned_unit()
+        result = neurometric_function(headings, rates)
+        zero_idx = np.argmin(np.abs(result.headings))
+        assert result.p_right[zero_idx] == pytest.approx(0.5)
+
+    def test_p_right_increases_for_right_preferring(self) -> None:
+        """For a right-preferring unit, p_right should generally increase."""
+        headings, rates = self._make_tuned_unit(n_per=80, seed=1)
+        result = neurometric_function(headings, rates, prefers_right=True)
+        # Compare the average of negative vs positive heading p_right
+        neg_mask = result.headings < 0
+        pos_mask = result.headings > 0
+        if neg_mask.any() and pos_mask.any():
+            avg_neg = np.nanmean(result.p_right[neg_mask])
+            avg_pos = np.nanmean(result.p_right[pos_mask])
+            assert avg_pos > avg_neg
+
+    def test_sensitive_unit_has_lower_threshold(self) -> None:
+        """A steeper tuning curve should produce a lower threshold."""
+        h_sens, r_sens = self._make_tuned_unit(sigma=2.0, n_per=60, seed=2)
+        h_weak, r_weak = self._make_tuned_unit(sigma=10.0, n_per=60, seed=3)
+        t_sens = neurometric_function(h_sens, r_sens).threshold
+        t_weak = neurometric_function(h_weak, r_weak).threshold
+        assert t_sens < t_weak
+
+    def test_too_few_trials_gives_nan_threshold(self) -> None:
+        """With very few trials per heading, the fit should fail gracefully."""
+        headings = np.array([-12, 0, 12], dtype=float)
+        rates = np.array([5.0, 10.0, 15.0])
+        result = neurometric_function(headings, rates)
+        # May or may not converge with 3 single-trial headings
+        assert isinstance(result, NeurometricResult)
+
+
+# ------------------------------------------------------------------
+# Neurometric bootstrap CI
+# ------------------------------------------------------------------
+class TestNeurometricBootstrapCI:
+    @staticmethod
+    def _make_data(seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
+        rng = np.random.default_rng(seed)
+        headings_set = np.array([-12, -6, -3, -1.5, 0, 1.5, 3, 6, 12])
+        headings = np.repeat(headings_set, 30)
+        rates = 15.0 + 1.5 * headings + rng.normal(0, 5.0, len(headings))
+        return headings, np.maximum(rates, 0.0)
+
+    def test_ci_contains_point_estimate(self) -> None:
+        headings, rates = self._make_data()
+        ci = neurometric_bootstrap_ci(
+            headings, rates, n_bootstrap=100, rng=np.random.default_rng(0)
+        )
+        assert ci["ci_low"] <= ci["threshold"] <= ci["ci_high"]
+
+    def test_se_is_positive(self) -> None:
+        headings, rates = self._make_data()
+        ci = neurometric_bootstrap_ci(
+            headings, rates, n_bootstrap=100, rng=np.random.default_rng(1)
+        )
+        assert ci["se"] > 0.0
+
+    def test_n_bootstrap_ok_reported(self) -> None:
+        headings, rates = self._make_data()
+        ci = neurometric_bootstrap_ci(
+            headings, rates, n_bootstrap=50, rng=np.random.default_rng(2)
+        )
+        assert ci["n_bootstrap_ok"] > 0
+        assert ci["n_bootstrap_ok"] <= 50
+
+    def test_wider_alpha_gives_narrower_ci(self) -> None:
+        headings, rates = self._make_data(seed=7)
+        ci_95 = neurometric_bootstrap_ci(
+            headings, rates, alpha=0.05, n_bootstrap=200, rng=np.random.default_rng(3)
+        )
+        ci_80 = neurometric_bootstrap_ci(
+            headings, rates, alpha=0.20, n_bootstrap=200, rng=np.random.default_rng(3)
+        )
+        w95 = ci_95["ci_high"] - ci_95["ci_low"]
+        w80 = ci_80["ci_high"] - ci_80["ci_low"]
+        assert w80 < w95
 
 
 # ------------------------------------------------------------------

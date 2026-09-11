@@ -145,6 +145,78 @@ def neurometric_function(
     return NeurometricResult(levels, p_right, n_used, fit, bool(prefers_right))
 
 
+def neurometric_bootstrap_ci(
+    headings: Sequence[float],
+    rates: Sequence[float],
+    prefers_right: bool | None = None,
+    fit_lapse: bool = False,
+    n_bootstrap: int = 1000,
+    alpha: float = 0.05,
+    rng: np.random.Generator | None = None,
+) -> dict[str, float]:
+    """Bootstrap confidence interval for the neurometric threshold.
+
+    Resamples trials with replacement and refits the neurometric function
+    on each resample.  The threshold (sigma of the fitted cumulative
+    Gaussian) is collected across resamples to form a percentile CI.
+
+    This quantifies how reliably a single neuron discriminates heading:
+    a tight CI around a low threshold means the unit is a consistent,
+    sensitive discriminator, while a wide CI warns that the threshold
+    estimate is unstable (few trials, noisy responses, or weak tuning).
+
+    Parameters
+    ----------
+    headings, rates
+        Per-trial heading angle and firing rate.
+    prefers_right
+        Fix the preferred direction (estimated if None).
+    fit_lapse
+        Whether to fit a lapse rate in the psychometric curve.
+    n_bootstrap
+        Number of bootstrap resamples.
+    alpha
+        Significance level (0.05 for a 95% CI).
+    rng
+        Random number generator for reproducibility.
+
+    Returns
+    -------
+    dict
+        Keys: ``threshold``, ``ci_low``, ``ci_high``, ``se``,
+        ``n_bootstrap_ok`` (resamples with finite thresholds).
+    """
+    x = np.asarray(headings, float)
+    r = np.asarray(rates, float)
+    ok = np.isfinite(x) & np.isfinite(r)
+    x, r = x[ok], r[ok]
+
+    if prefers_right is None:
+        prefers_right = preferred_side(x, r)
+
+    point = neurometric_function(x, r, prefers_right=prefers_right, fit_lapse=fit_lapse)
+    rng = rng or np.random.default_rng(0)
+    n = len(x)
+    thresholds: list[float] = []
+
+    for _ in range(n_bootstrap):
+        idx = rng.integers(0, n, size=n)
+        result = neurometric_function(
+            x[idx], r[idx], prefers_right=prefers_right, fit_lapse=fit_lapse,
+        )
+        if np.isfinite(result.threshold) and result.fit.converged:
+            thresholds.append(result.threshold)
+
+    arr = np.array(thresholds) if thresholds else np.array([])
+    return {
+        "threshold": float(point.threshold),
+        "ci_low": float(np.percentile(arr, 100 * alpha / 2)) if len(arr) > 0 else np.nan,
+        "ci_high": float(np.percentile(arr, 100 * (1 - alpha / 2))) if len(arr) > 0 else np.nan,
+        "se": float(np.std(arr)) if len(arr) > 0 else np.nan,
+        "n_bootstrap_ok": len(arr),
+    }
+
+
 # --------------------------------------------------------------------------------------
 # Choice probability
 # --------------------------------------------------------------------------------------
