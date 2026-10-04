@@ -33,3 +33,8 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# --- Tooling caches / coverage
+.mypy_cache/
+.coverage
+htmlcov/
