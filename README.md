@@ -53,6 +53,12 @@ python analysis/scripts/demo_synthetic.py --outdir figures/demo
 The demo runs the full pipeline on simulated sessions and writes vector panels with CSV/JSON
 sidecars. When the recordings arrive, only the loader changes.
 
+Once a real `.mat` file is available, inspect its structure before running any analysis:
+
+```bash
+python analysis/scripts/inspect_data.py data/<file>.mat
+```
+
 ## The choice-coding gotcha
 
 The stored `choice` field does not straightforwardly mean left or right — plotting it directly
