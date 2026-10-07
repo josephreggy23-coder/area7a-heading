@@ -26,8 +26,11 @@ Both outcomes are informative — see [`notes/03_analysis_plan.md`](notes/03_ana
 analysis/seven_a/     the toolkit
   matio.py            .mat loading (v7 and v7.3) + a describe() tree printer
   behavior.py         psychometric fitting; recovery of the choice sign convention
+  spikes.py           spike times to firing rates over the stimulus window
   neurometrics.py     ROC, neurometric functions, choice probability, DDI, congruency
   integration.py      optimal cue-combination predictions and measured weights
+  population.py       population decoding of heading and choice
+  cross_temporal.py   cross-temporal generalization of population heading codes
   synth.py            ground-truth simulator
   style.py            Illustrator-safe figure export
 analysis/scripts/     runnable analyses
