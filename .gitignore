@@ -40,3 +40,7 @@ desktop.ini
 htmlcov/
 build/
 dist/
+
+# --- Environment
+.env
+.env.*
