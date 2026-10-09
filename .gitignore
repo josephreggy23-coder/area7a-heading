@@ -44,3 +44,7 @@ dist/
 # --- Environment
 .env
 .env.*
+
+# --- Editor swap / backup files
+*.swp
+*~
