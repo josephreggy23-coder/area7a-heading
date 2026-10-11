@@ -38,6 +38,8 @@ desktop.ini
 .mypy_cache/
 .coverage
 htmlcov/
+coverage.xml
+.tox/
 build/
 dist/
 
