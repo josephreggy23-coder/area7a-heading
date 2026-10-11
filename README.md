@@ -42,6 +42,9 @@ Data and source PDFs are deliberately untracked — see `.gitignore`.
 
 ## Getting started
 
+Requires Python 3.11+ with `numpy`, `scipy`, `matplotlib`, `pandas`, `h5py`, and `pytest`
+(minimum versions are listed in [`pyproject.toml`](pyproject.toml)).
+
 ```bash
 python -m pytest analysis/tests -q
 ```
