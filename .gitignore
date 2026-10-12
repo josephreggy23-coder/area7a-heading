@@ -1,6 +1,8 @@
 # --- Data: unpublished macaque recordings from the Angelaki/Avila dataset. Not ours to redistribute.
 data/
 *.mat
+*.h5
+*.hdf5
 *.nev
 *.ns*
 *.plx
