@@ -46,6 +46,10 @@ Requires Python 3.11+ with `numpy`, `scipy`, `matplotlib`, `pandas`, `h5py`, and
 (minimum versions are listed in [`pyproject.toml`](pyproject.toml)).
 
 ```bash
+python -m pip install numpy scipy matplotlib pandas h5py pytest
+```
+
+```bash
 python -m pytest analysis/tests -q
 ```
 
