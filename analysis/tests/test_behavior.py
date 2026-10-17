@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from scipy import stats
 
 from seven_a.behavior import (
     ChoiceCoding,
