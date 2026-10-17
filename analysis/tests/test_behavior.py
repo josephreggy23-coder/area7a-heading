@@ -10,7 +10,6 @@ import numpy as np
 import pytest
 
 from seven_a.behavior import (
-    ChoiceCoding,
     PsychometricFit,
     choice_proportions,
     cumulative_gaussian,
