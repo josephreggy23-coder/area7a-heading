@@ -36,6 +36,7 @@ analysis/seven_a/     the toolkit
 analysis/scripts/     runnable analyses
 analysis/tests/       ground-truth tests
 notes/                literature notes, plot inventory, analysis plan, open questions
+figures/              regenerated output figures (git-ignored)
 ```
 
 Data and source PDFs are deliberately untracked — see `.gitignore`.
