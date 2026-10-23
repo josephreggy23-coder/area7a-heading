@@ -87,7 +87,7 @@ Broad review; scan-level read. Relevant hooks:
 | C | **Fetsch, Pouget, DeAngelis & Angelaki 2011**, *Nat Neurosci* 15:146 — "Neural correlates of reliability-based cue weighting during multisensory integration" | 10.1038/nn.2983 | Vary visual reliability (coherence); behavioural weights shift toward the reliable cue; neuronal combination weights shift the same way |
 
 **Note on C:** this analysis *requires trials at ≥2 visual coherences*. Whether Eric's HD dataset
-has that is an open question — see `03_data_questions.md`. Without it, C is not reproducible and
+has that is an open question — see `04_data_questions.md`. Without it, C is not reproducible and
 the paper is built on A + B.
 
 **Note on B:** the cue-conflict (Δ) manipulation used to measure *behavioural weights* likewise

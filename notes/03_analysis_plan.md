@@ -111,7 +111,7 @@ lowers the risk of the whole project.
 | Primitive | Definition | Module |
 |---|---|---|
 | Cumulative-Gaussian psychometric fit | MLE, params μ (PSE), σ (threshold), optional λ (lapse) | `behavior.py` |
-| **Choice-coding resolver** | recover P(rightward) from the stored `choice` field — see `03_data_questions.md` | `behavior.py` |
+| **Choice-coding resolver** | recover P(rightward) from the stored `choice` field — see `04_data_questions.md` | `behavior.py` |
 | Optimal threshold prediction | σ_pred = √(σ₁²σ₂²/(σ₁²+σ₂²)) | `integration.py` |
 | Predicted cue weights | w₁ = σ₂²/(σ₁²+σ₂²) | `integration.py` |
 | Empirical weights from conflict | from PSE shift across Δ | `integration.py` |
