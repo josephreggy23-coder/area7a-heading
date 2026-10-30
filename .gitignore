@@ -59,3 +59,8 @@ dist/
 
 # --- Logs
 *.log
+
+# --- OS / editor
+.DS_Store
+Thumbs.db
+.mypy_cache/
