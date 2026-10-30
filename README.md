@@ -37,6 +37,7 @@ analysis/scripts/     runnable analyses
 analysis/tests/       ground-truth tests
 notes/                literature notes, plot inventory, analysis plan, open questions
 figures/              regenerated output figures (git-ignored)
+pyproject.toml        project metadata and minimum dependency versions
 ```
 
 Data and source PDFs are deliberately untracked — see `.gitignore`.
