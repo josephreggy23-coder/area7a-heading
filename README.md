@@ -55,6 +55,9 @@ python -m pip install numpy scipy matplotlib pandas h5py pytest
 python -m pytest analysis/tests -q
 ```
 
+No package install is needed: `pyproject.toml` puts `analysis/` on pytest's path, so plain
+`python -m pytest -q` from the repository root also works.
+
 ```bash
 python analysis/scripts/demo_synthetic.py --outdir figures/demo
 ```
