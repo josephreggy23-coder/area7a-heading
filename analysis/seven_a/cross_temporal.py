@@ -38,14 +38,14 @@ generalization measure.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 import numpy as np
 
-from .population import _fit_logistic, _predict, _standardise, _cv_folds
 from .neurometrics import roc_auc
-from .spikes import HD_MOTION_ONSET_S, HD_MOTION_DURATION_S
+from .population import _cv_folds, _fit_logistic, _predict, _standardise
+from .spikes import HD_MOTION_DURATION_S, HD_MOTION_ONSET_S
 
 
 @dataclass

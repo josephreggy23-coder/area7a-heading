@@ -22,8 +22,9 @@ fits all of them and reports why it picked one, so the decision is auditable rat
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Literal, Sequence
+from typing import Any, Literal
 
 import numpy as np
 from scipy import optimize, stats

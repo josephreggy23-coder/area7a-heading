@@ -12,8 +12,9 @@ to a file instead of being read off a plot.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt

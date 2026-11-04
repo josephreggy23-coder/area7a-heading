@@ -15,8 +15,9 @@ single-neuron sensitivity in 7a so poor.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, Sequence
+from typing import Literal
 
 import numpy as np
 from scipy import stats

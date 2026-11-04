@@ -12,8 +12,8 @@ see notes/04_data_questions.md.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 import numpy as np
 from scipy import optimize, stats
