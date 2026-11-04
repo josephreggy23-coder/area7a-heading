@@ -81,7 +81,7 @@ def save_panel(
     fig: plt.Figure,
     outdir: str | Path,
     name: str,
-    data: "object | None" = None,
+    data: object | None = None,
     stats: Mapping[str, Any] | None = None,
     formats: tuple[str, ...] = ("pdf", "svg"),
 ) -> Path:
